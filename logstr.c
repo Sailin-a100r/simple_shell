@@ -25,6 +25,7 @@ int logstr(char *str)
 int count(char *str)
 {
 	int length = 0;
+
 	if (str == NULL)
 		return (-1);
 	if (!str)
