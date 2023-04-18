@@ -8,7 +8,7 @@
 
 int main(void)
 {
-	char *string, *line[1024];
+	char *string, *line[100];
 	size_t n = 0;
 	ssize_t characters = 0;
 
@@ -24,8 +24,9 @@ int main(void)
 
 		/* getrid of new line character */
 		string = strtok(*line, "\n");
-		logstr(string);
-		logstr(" command executed\n");
+
+		/* delegate to controller */
+		controller(string);
 	}
 	free(*line);
 	return (0);
