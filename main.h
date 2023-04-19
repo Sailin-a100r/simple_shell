@@ -8,7 +8,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-int controller(char *);
+int controller(char *, char *[]);
 int logstr(char *str);
 int count(char *str);
+char **set_argvec(char *, char *argvec[]);
+void *_realloc(void *, unsigned int , unsigned int);
 #endif

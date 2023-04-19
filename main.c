@@ -3,14 +3,22 @@
 /**
  * main - Entry point to the simple_shell
  *
+ * @argc: number of arguments given to program
+ * @argv: array of pointers to arguments as strings
+ * @envp: array of pointers to environment varaibles
+ *
  * Return: 0 Success
  */
 
-int main(void)
+int main(int argc, char *argv[], char *envp[])
 {
 	char *string, *line[100];
 	size_t n = 0;
 	ssize_t characters = 0;
+
+	/* for unused warnings */
+	argc = argc;
+	argv = argv;
 
 	while (1)
 	{
@@ -26,7 +34,9 @@ int main(void)
 		string = strtok(*line, "\n");
 
 		/* delegate to controller */
-		controller(string);
+		if (!string)
+			continue;
+		controller(string, envp);
 	}
 	free(*line);
 	return (0);
