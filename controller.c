@@ -14,18 +14,18 @@ int controller(char *comline, char *envp[])
 	pid_t pid;
 	int res;
 	char *argvec[127] ; /* arguments vector */
-	/*char **envec = {NULL};*/ /* environment vector */
 
-	/* create a duplicate */
-	pid = fork();
+	/* search_path();--------------------------- */
+	char *path = get_envar("PATH");
+	logstr(path);
 
-	if (pid == -1)
+	pid = fork(); /* create a child process */
+	if (pid == -1) /* fork failure */
 	{
 		perror("./hsh");
 		return (0);
 	}
-	/* for child program */
-	else if (pid == 0)
+	else if (pid == 0) /* for child process */
 	{
 		set_argvec(comline, argvec);
 		res = execve(argvec[0], argvec, envp);
@@ -37,8 +37,7 @@ int controller(char *comline, char *envp[])
 		else
 			return (1);
 	}
-	/* for parent program */
-	else
+	else /* for parent process */
 	{
 		wait(NULL); /* wait for termination signal */
 		return (1);
@@ -64,7 +63,7 @@ char **set_argvec(char *com, char *argvec[])
 	}
 	token = strtok(com, " ");
 
-	/* add pointer to the path */
+	/* add pointer to the program */
 	argvec[0] = token;
 
 	/* add other arguments if found */
