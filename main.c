@@ -12,7 +12,7 @@
 
 int main(int argc, char *argv[], char *envp[])
 {
-	char *string, *line[100];
+	char *string, *line[100], **dirarray, *path;
 	size_t n = 0;
 	ssize_t characters = 0;
 
@@ -20,24 +20,26 @@ int main(int argc, char *argv[], char *envp[])
 	argc = argc;
 	argv = argv;
 
+	/* create the path array */
+	path = get_path();
+	dirarray = get_dirarray(path);
 	while (1)
 	{
 		/* prompt and wait for inpt */
 		logstr("$ ");
 		characters = getline(line, &n, stdin);
-
 		/* Handle EOF (Ctrl+D) condition */
 		if (characters == -1)
 			return (-1);
-
 		/* getrid of new line character */
 		string = strtok(*line, "\n");
-
 		/* delegate to controller */
 		if (!string)
 			continue;
-		controller(string, envp);
+		controller(string, envp, dirarray);
 	}
+	free(*dirarray);
+	free(path);
 	free(*line);
 	return (0);
 }

@@ -3,51 +3,61 @@
 /**
  * controller - function that executes the program given
  *
- * @path: path to the program to execute
+ * @comline: command line to execute
  * @envp: environment variables vector
+ * @dirarray: array of directories of path
  *
- * Return: 1 success , 0 otherwise.
+ * Return: 0 success , -1 otherwise.
  */
 
-int controller(char *comline, char *envp[])
+int controller(char *comline, char *envp[], char **dirarray)
 {
 	pid_t pid;
 	int res;
-	char *argvec[127] ; /* arguments vector */
+	char *argvec[127]; /* max arguments vector */
+	char *fullpath;
 
-	/* search_path();--------------------------- */
-	char *path = get_envar("PATH");
-	logstr(path);
+	set_argvec(comline, argvec);
+	fullpath = search_path(dirarray, argvec[0]);
 
-	pid = fork(); /* create a child process */
+	/* no such program */
+	if (!fullpath)
+	{
+		logstr("./hsh: No such file or directory\n");
+		return (-1);
+	}
+	/* program found */
+	argvec[0] = fullpath;
+	pid = fork();
 	if (pid == -1) /* fork failure */
 	{
 		perror("./hsh");
-		return (0);
+		return (-1);
 	}
-	else if (pid == 0) /* for child process */
+	if (pid == 0) /* for child process */
 	{
-		set_argvec(comline, argvec);
 		res = execve(argvec[0], argvec, envp);
 		if (res == -1)
 		{
 			perror("./hsh");
-			return (0);
+			return (-1);
 		}
 		else
-			return (1);
+			return (0);
 	}
 	else /* for parent process */
 	{
 		wait(NULL); /* wait for termination signal */
-		return (1);
+		free(fullpath);
+		return (0);
 	}
 }
 
 /**
  * set_argvec - function to create the argument vector
  *
- * @com - the command given to the shell
+ * @com: the command given to the shell
+ * @argvec: pointer to the argument vector to set
  *
  * Return: array of strings that is the argvec, or NULL on failure.
  */
@@ -58,9 +68,7 @@ char **set_argvec(char *com, char *argvec[])
 	char *token;
 
 	if (!com)
-	{
 		return (NULL);
-	}
 	token = strtok(com, " ");
 
 	/* add pointer to the program */
@@ -74,66 +82,4 @@ char **set_argvec(char *com, char *argvec[])
 		size = size + 1;
 	}
 	return (argvec);
-}
-
-/**
- * _realloc - function that reallocates a memory block using malloc and free
- *
- * @ptr: pointer to old memory
- * @old_size: size of old memory
- * @new_size: size of new memory
- *
- * Return: pointer to the new memory block
- */
-
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
-{
-	char *newptr, *oldptr;
-	int i, old, new;
-
-	old = old_size;
-	new = new_size;
-	if (ptr == NULL)
-	{
-		newptr = malloc(new_size);
-		if (newptr == NULL)
-			return (NULL);
-		return ((void *) newptr);
-	}
-	else if (new_size == 0 && ptr != NULL)
-	{
-		free(ptr);
-		return (NULL);
-	}
-	else if (new_size == old_size)
-	{
-		return (ptr);
-	}
-	else if (new_size > old_size)
-	{
-		newptr = malloc(new_size);
-		if (newptr == NULL)
-			return (NULL);
-		oldptr = (char *) ptr;
-		for (i = 0; i < old; i++)
-		{
-			newptr[i] = oldptr[i];
-		}
-		free(ptr);
-		return ((void *) newptr);
-	}
-	else if (new_size < old_size)
-	{
-		newptr = malloc(new_size);
-		if (newptr == NULL)
-			return (NULL);
-		oldptr = (char *) ptr;
-		for (i = 0; i < new; i++)
-		{
-			newptr[i] = oldptr[i];
-		}
-		free(ptr);
-		return ((void *) newptr);
-	}
-	return (ptr);
 }
