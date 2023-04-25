@@ -54,7 +54,8 @@ int countchar(char *str, char c)
 	if (!str)
 		return (-1);
 
-	i = length = 0;
+	i = 0;
+	length = 0;
 	while (str[length])
 	{
 		if (str[length] == c)

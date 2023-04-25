@@ -4,53 +4,38 @@
  * controller - function that executes the program given
  *
  * @comline: command line to execute
- * @envp: environment variables vector
+ * @envp: poiner to environment variables vector
  * @dirarray: array of directories of path
+ * @exit: pointer to exit signal
  *
  * Return: 0 success , -1 otherwise.
  */
 
-int controller(char *comline, char *envp[], char **dirarray)
+int controller(char *comline, char *envp[], char **dirarray, size_t *exit)
 {
-	pid_t pid;
-	int res;
+	int res = 0;
 	char *argvec[127]; /* max arguments vector */
-	char *fullpath;
+	char fullpath[256] = "";
 
 	set_argvec(comline, argvec);
-	fullpath = search_path(dirarray, argvec[0]);
+	if (_strcmp(argvec[0], "exit") == 0)
+	{
+		*exit = 1;
+		return (-1);
+	}
+	search_path(dirarray, argvec[0], fullpath);
 
 	/* no such program */
-	if (!fullpath)
+	if (fullpath[0] != '/')
 	{
 		logstr("./hsh: No such file or directory\n");
 		return (-1);
 	}
 	/* program found */
 	argvec[0] = fullpath;
-	pid = fork();
-	if (pid == -1) /* fork failure */
-	{
-		perror("./hsh");
-		return (-1);
-	}
-	if (pid == 0) /* for child process */
-	{
-		res = execve(argvec[0], argvec, envp);
-		if (res == -1)
-		{
-			perror("./hsh");
-			return (-1);
-		}
-		else
-			return (0);
-	}
-	else /* for parent process */
-	{
-		wait(NULL); /* wait for termination signal */
-		free(fullpath);
-		return (0);
-	}
+
+	res = start_process(argvec, envp);
+	return (res);
 }
 
 /**
@@ -82,4 +67,43 @@ char **set_argvec(char *com, char *argvec[])
 		size = size + 1;
 	}
 	return (argvec);
+}
+
+/**
+ * start_process - function that creates a child process
+ *
+ * @argvec: array of the path and arguments of the program
+ * @envp: pointer to environment variables
+ *
+ * Return: 0 on success, -1 on errror
+ */
+
+int start_process(char **argvec, char **envp)
+{
+	pid_t pid;
+	int res;
+
+	pid = fork();
+	if (pid == -1) /* fork failure */
+	{
+		perror("./hsh");
+		return (-1);
+	}
+	if (pid == 0) /* for child process */
+	{
+		res = execve(argvec[0], argvec, envp);
+		if (res == -1)
+		{
+			perror("./hsh");
+			return (-1);
+		}
+		else
+			return (0);
+	}
+	else /* for parent process */
+	{
+		wait(NULL); /* wait for termination signal */
+		return (0);
+	}
+	return (0);
 }

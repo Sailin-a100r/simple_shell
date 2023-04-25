@@ -36,20 +36,17 @@ char *get_envar(char *var)
  * get_dirarray - function that returns an array of directories of $PATH
  *
  * @path: pointer to copy of $PATH
+ * @dirarray: array of pointers to path directories
  *
  * Return: array of strings of directories of $PATH
  */
-char **get_dirarray(char *path)
+char **get_dirarray(char *path, char **dirarray)
 {
-	char *dirname, **dirarray;
+	char *dirname;
 	int dircount, index;
 
 	/* count number of directories in the path */
 	dircount = countchar(path, ':') + 1;
-	dirarray = malloc(dircount * sizeof(char *));
-	if (!dirarray)
-		return (NULL);
-
 	/* tokenise the directories */
 	dirname = strtok(path, "=");
 
@@ -67,20 +64,18 @@ char **get_dirarray(char *path)
 /**
  * get_path - function that returns a pointer to a copy of $PATH
  *
+ * @path: string to hold a copy of the path
+ *
  * Return: pointer to a copied string of $PATH
  */
-char *get_path(void)
+char *get_path(char *path)
 {
-	char *pathpt, *path;
-	int pathlen;
+	char *pathpt;
 
 	/* pointer to the path environment variable */
 	pathpt = get_envar("PATH");
-	/* count the number of chars in the path */
-	pathlen = count(pathpt);
-	/* copy the path as string */
-	path = malloc(pathlen * sizeof(char));
 
+	/* copy the PATH into path */
 	if (path) /* success */
 	{
 		_strcpy(path, pathpt);
@@ -95,17 +90,20 @@ char *get_path(void)
  *
  * @dirname: the name of the directory to search
  * @filename: the name of the file to look for
+ * @filepath: fullpath of file if found
  *
  * Return: On success returns full path to the file
  * On failure returns NULL
  */
-char *search_dir(char *dirname, char *filename)
+/**
+ * struct dirent - directory entity structure.
+ * @d_name: entity name (file, directory, link, program...).
+ */
+char *search_dir(char *dirname, char *filename, char *filepath)
 {
 	DIR *dir; /* pointer to open directory */
 	struct dirent *entity; /* pointer to the structure returned */
-	char *fullpath;
 
-	fullpath = malloc(256 * sizeof(char));
 	dir = opendir(dirname);
 	if (dir == NULL)
 		return (NULL);
@@ -115,11 +113,11 @@ char *search_dir(char *dirname, char *filename)
 	{
 		if (_strcmp(entity->d_name, filename) == 0)
 		{ /* success */
-			_strcpy(fullpath, dirname);
-			_strcat(fullpath, "//");
-			_strcat(fullpath, filename);
+			_strcpy(filepath, dirname);
+			_strcat(filepath, "//");
+			_strcat(filepath, filename);
 			closedir(dir);
-			return (fullpath);
+			return (filepath);
 		}
 		entity = readdir(dir);
 	}
@@ -134,24 +132,26 @@ char *search_dir(char *dirname, char *filename)
  *
  * @dirarray: array of path directories
  * @filename: name of the program to look for
+ * @filepath: fullpath to the file if found
  *
  * Return: Onsuccess return the full path of the program,
  * Onfailure return NULL
  */
 
-char *search_path(char **dirarray, char *filename)
+char *search_path(char **dirarray, char *filename, char *filepath)
 {
 	int index = 0;
-	char *fullpath;
 
 	while (dirarray[index])
 	{
-		fullpath = search_dir(dirarray[index], filename);
-		if (fullpath)
+		search_dir(dirarray[index], filename, filepath);
+		if (filepath[0] == '/')
 		{
-			return (fullpath);
+			return (filepath);
 		}
+
 		index++;
 	}
+	filepath = "\0";
 	return (NULL);
 }

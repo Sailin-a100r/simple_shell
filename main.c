@@ -12,8 +12,8 @@
 
 int main(int argc, char *argv[], char *envp[])
 {
-	char *string, *line[100], **dirarray, *path;
-	size_t n = 0;
+	char *string, *line[100], *dirarray[20], path[300];
+	size_t n = 0, exit = 0;
 	ssize_t characters = 0;
 
 	/* for unused warnings */
@@ -21,8 +21,8 @@ int main(int argc, char *argv[], char *envp[])
 	argv = argv;
 
 	/* create the path array */
-	path = get_path();
-	dirarray = get_dirarray(path);
+	get_path(path);
+	get_dirarray(path, dirarray);
 	while (1)
 	{
 		/* prompt and wait for inpt */
@@ -36,10 +36,11 @@ int main(int argc, char *argv[], char *envp[])
 		/* delegate to controller */
 		if (!string)
 			continue;
-		controller(string, envp, dirarray);
+		controller(string, envp, dirarray, &exit);
+		/* exit command */
+		if (exit == 1)
+			break;
 	}
-	free(*dirarray);
-	free(path);
 	free(*line);
 	return (0);
 }
