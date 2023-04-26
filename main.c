@@ -15,7 +15,7 @@ int main(int argc, char *argv[], char *envp[])
 	char *string, *line[100], *dirarray[20], path[300];
 	size_t n = 0, quit = 0;
 	ssize_t characters = 0;
-	char delim[5];
+	char delim[] = "\n";
 
 	/* for unused warnings */
 	argc = argc;
@@ -33,7 +33,6 @@ int main(int argc, char *argv[], char *envp[])
 		if (characters == -1)
 			return (-1);
 		/* getrid of new line character */
-		delim[0] = '\n';
 		string = strtok(*line, delim);
 		/* delegate to controller */
 		if (!string)
