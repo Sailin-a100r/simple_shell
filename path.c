@@ -95,15 +95,9 @@ char *get_path(char *path)
  * Return: On success returns full path to the file
  * On failure returns NULL
  */
-/**
- * struct dirent - directory entity structure.
- */
 char *search_dir(char *dirname, char *filename, char *filepath)
 {
 	DIR *dir; /* pointer to open directory */
-/**
- * struct dirent - directory entity structure.
- */
 	struct dirent *entity; /* pointer to the structure returned */
 
 	dir = opendir(dirname);
