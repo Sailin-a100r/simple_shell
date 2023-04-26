@@ -13,8 +13,9 @@
 int main(int argc, char *argv[], char *envp[])
 {
 	char *string, *line[100], *dirarray[20], path[300];
-	size_t n = 0, exit = 0;
+	size_t n = 0, quit = 0;
 	ssize_t characters = 0;
+	char delim[5];
 
 	/* for unused warnings */
 	argc = argc;
@@ -32,14 +33,15 @@ int main(int argc, char *argv[], char *envp[])
 		if (characters == -1)
 			return (-1);
 		/* getrid of new line character */
-		string = strtok(*line, "\n");
+		delim[0] = '\n';
+		string = strtok(*line, delim);
 		/* delegate to controller */
 		if (!string)
 			continue;
-		controller(string, envp, dirarray, &exit);
+		controller(string, envp, dirarray, &quit);
 		/* exit command */
-		if (exit == 1)
-			break;
+		if (quit == 1)
+			exit(99);
 	}
 	free(*line);
 	return (0);

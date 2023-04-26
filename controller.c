@@ -11,7 +11,7 @@
  * Return: 0 success , -1 otherwise.
  */
 
-int controller(char *comline, char *envp[], char **dirarray, size_t *exit)
+int controller(char *comline, char *envp[], char **dirarray, size_t *quit)
 {
 	int res = 0;
 	char *argvec[127]; /* max arguments vector */
@@ -20,7 +20,7 @@ int controller(char *comline, char *envp[], char **dirarray, size_t *exit)
 	set_argvec(comline, argvec);
 	if (_strcmp(argvec[0], "exit") == 0)
 	{
-		*exit = 1;
+		*quit = 1;
 		return (-1);
 	}
 	else if (argvec[0][0] == '/' || argvec[0][0] == '.')
