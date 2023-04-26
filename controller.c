@@ -23,6 +23,11 @@ int controller(char *comline, char *envp[], char **dirarray, size_t *exit)
 		*exit = 1;
 		return (-1);
 	}
+	else if (argvec[0][0] == '/' || argvec[0][0] == '.')
+	{
+		res = start_process(argvec, envp);
+		return (res);
+	}
 	search_path(dirarray, argvec[0], fullpath);
 
 	/* no such program */
