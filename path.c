@@ -98,7 +98,7 @@ char *get_path(char *path)
 char *search_dir(char *dirname, char *filename, char *filepath)
 {
 	DIR *dir; /* pointer to open directory */
-	struct dirent *entity; /* pointer to the structure returned */
+	dirent_t *entity; /* pointer to the structure returned */
 
 	dir = opendir(dirname);
 	if (dir == NULL)

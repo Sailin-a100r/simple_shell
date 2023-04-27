@@ -32,5 +32,5 @@ extern char **environ;
 /**
  * dirent_t - typedef for struct dirent
  */
-/*typedef struct dirent dirent_t;*/
+typedef struct dirent dirent_t;
 #endif

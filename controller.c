@@ -6,7 +6,7 @@
  * @comline: command line to execute
  * @envp: poiner to environment variables vector
  * @dirarray: array of directories of path
- * @exit: pointer to exit signal
+ * @quit: pointer to exit signal
  *
  * Return: 0 success , -1 otherwise.
  */
