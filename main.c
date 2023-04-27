@@ -38,5 +38,6 @@ int main(int argc, char *argv[], char *envp[])
 		controller(string, envp, dirarray, &quit);
 	}
 	free(*line);
+	exit(0);
 	return (0);
 }
