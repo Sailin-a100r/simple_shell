@@ -26,8 +26,6 @@ int main(int argc, char *argv[], char *envp[])
 	get_dirarray(path, dirarray);
 	while (!quit)
 	{
-		/* prompt and wait for inpt */
-		logstr("$ ");
 		characters = getline(line, &n, stdin);
 		/* Handle EOF (Ctrl+D) condition */
 		if (characters == -1)
